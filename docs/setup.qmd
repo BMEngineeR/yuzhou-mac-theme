@@ -1,0 +1,318 @@
+---
+title: "yuzhou-mac-theme: Terminal Setup Guide"
+author: "Yuzhou Chang"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    code-copy: true
+    theme: cosmo
+    highlight-style: github
+  pdf:
+    toc: true
+    geometry:
+      - margin=1in
+execute:
+  echo: true
+  eval: false
+---
+
+# Overview
+
+This guide walks through setting up a clean, fast, cross-platform terminal
+on **macOS** and **Linux** using:
+
+- **[Ghostty](https://ghostty.org)** — modern GPU-accelerated terminal
+- **[zsh](https://www.zsh.org/)** with autosuggestions + syntax highlighting
+- **[Starship](https://starship.rs/)** — fast cross-shell prompt
+- **[eza](https://eza.rocks/)** — `ls` replacement with colors and icons
+- **JetBrainsMono Nerd Font** — monospaced font with developer icons
+
+::: {.callout-note}
+All code, configs, and the one-shot installer live at
+[github.com/BMEngineeR/yuzhou-mac-theme](https://github.com/BMEngineeR/yuzhou-mac-theme).
+:::
+
+# Before & After
+
+::: {#fig-before-after layout-ncol=2}
+![Before — plain bash/zsh, no icons, no colors](images/01-before.png){#fig-before width=100% fig-alt="Plain terminal with default prompt and uncolored ls output"}
+
+![After — Starship prompt, colored `eza` listing, icons](images/02-after.png){#fig-after width=100% fig-alt="Themed terminal with Starship prompt, colored file listing with icons"}
+
+The same shell, before and after this setup.
+:::
+
+# Prerequisites
+
+| Component | macOS                                | Linux                              |
+|-----------|--------------------------------------|------------------------------------|
+| OS        | macOS 13+                            | Ubuntu 22.04+ / Fedora 38+ / Arch  |
+| Terminal  | Ghostty 1.0+ ([install](https://ghostty.org/download)) | Ghostty 1.0+ (same)                |
+| Shell     | zsh 5.9+ (default on modern macOS)   | zsh 5.9+ (`apt/dnf/pacman install zsh`) |
+| Git       | preinstalled                         | preinstalled or via package manager |
+
+# One-shot install
+
+```bash
+git clone https://github.com/BMEngineeR/yuzhou-mac-theme.git ~/yuzhou-mac-theme
+cd ~/yuzhou-mac-theme
+bash install.sh
+```
+
+The installer is idempotent — re-running it is safe. Existing
+`~/.zshrc` and `~/.config/ghostty/config` are backed up with a timestamp
+before being replaced by symlinks into the repo.
+
+## What the installer does
+
+```{mermaid}
+flowchart TD
+    A[bash install.sh] --> B{uname -s}
+    B -->|Darwin| C[Homebrew]
+    B -->|Linux| D{/etc/os-release}
+    D -->|debian/ubuntu| E[apt]
+    D -->|fedora/rhel| F[dnf]
+    D -->|arch| G[pacman]
+    C --> H[Install: starship, eza, zsh-autosuggestions,<br/>zsh-syntax-highlighting, gh + Nerd Font cask]
+    E --> I[Install equivalent packages]
+    F --> I
+    G --> I
+    I --> J[Download Nerd Font zip<br/>fc-cache -f]
+    H --> K[Symlink configs into $HOME]
+    J --> K
+    K --> L[Done — exec zsh]
+```
+
+::: {#fig-installer-output}
+![Installer run on a clean Mac](images/03-installer-run.png){width=100% fig-alt="Terminal output showing install.sh progress with brew installs and link confirmations"}
+
+Sample output from running `bash install.sh` on a fresh Mac.
+:::
+
+# What you get
+
+## Starship prompt
+
+The Starship prompt automatically shows:
+
+- Current directory (with shortened paths)
+- Git branch and status
+- Active language version (when in a project: Node, Python, Rust, Go, …)
+- Command execution time when commands take longer than a threshold
+- Non-zero exit status from the previous command
+
+::: {#fig-starship}
+![Starship prompt inside a git repo](images/04-starship-git.png){width=80% fig-alt="Prompt showing folder name and git branch with modified file indicator"}
+:::
+
+Example interactive session (simulated output):
+
+```bash
+~ on  main
+❯ cd Documents/GitHub/yuzhou-mac-theme
+
+yuzhou-mac-theme on  main [!?]
+❯ git status --short
+ M README.md
+?? docs/
+
+yuzhou-mac-theme on  main [!?] took 3ms
+❯
+```
+
+## Colored `ls` with `eza`
+
+The aliases below replace `ls`:
+
+```bash
+alias ls='eza --icons --group-directories-first'
+alias ll='eza -lh --icons --group-directories-first --git'
+alias la='eza -lah --icons --group-directories-first --git'
+alias lt='eza --tree --level=2 --icons --group-directories-first'
+```
+
+Color coding by file type:
+
+| Type              | Color   | Examples                          |
+|-------------------|---------|-----------------------------------|
+| Directory         | Blue    | `src/`, `node_modules/`           |
+| Executable script | Green   | `install.sh`, `*.py` with `+x`    |
+| Symlink           | Cyan    | `current -> v1.2.3/`              |
+| Archive           | Red     | `*.zip`, `*.tar.gz`               |
+| Image             | Magenta | `*.png`, `*.jpg`                  |
+| Plain file        | White   | `README.md`, `*.txt`              |
+
+::: {#fig-eza}
+![`ll` output inside the repo](images/05-eza-ll.png){width=90% fig-alt="Long-format directory listing with icons, colored file types, and git status column"}
+
+`ll` inside the `yuzhou-mac-theme` repo, showing icons, colored types,
+and the `--git` status column.
+:::
+
+## Syntax highlighting & autosuggestions
+
+As you type, `zsh-syntax-highlighting` colors valid commands green and
+invalid ones red, while `zsh-autosuggestions` shows a grayed-out
+suggestion from your history that you accept by pressing **→**.
+
+::: {#fig-zsh-plugins}
+![Live highlighting and suggestions while typing](images/06-zsh-plugins.png){width=90% fig-alt="Terminal showing a green-highlighted valid command and a gray autosuggestion to the right"}
+:::
+
+# Customization
+
+## Switching the color theme
+
+List built-in themes:
+
+```bash
+ghostty +list-themes
+```
+
+Edit `~/.config/ghostty/config`:
+
+```toml
+theme = "Catppuccin Mocha"
+```
+
+Popular options:
+
+::: {layout-ncol=3}
+- `Catppuccin Mocha`
+- `Tokyo Night`
+- `Dracula`
+- `Nord`
+- `Solarized Dark`
+- `GruvboxDark` (default)
+:::
+
+::: {#fig-themes layout-ncol=2}
+![Catppuccin Mocha](images/07-theme-catppuccin.png){#fig-cat width=100%}
+
+![Tokyo Night](images/08-theme-tokyo.png){#fig-tokyo width=100%}
+
+Two popular alternative themes.
+:::
+
+## Customizing Starship
+
+Generate a starter config:
+
+```bash
+mkdir -p ~/.config
+starship preset nerd-font-symbols -o ~/.config/starship.toml
+```
+
+Then edit `~/.config/starship.toml`. The Starship docs list every
+module: <https://starship.rs/config/>.
+
+## Customizing `eza` colors
+
+Set `EZA_COLORS` in `~/.zshrc` to override defaults. Example —
+make directories bold magenta:
+
+```bash
+export EZA_COLORS="di=1;35"
+```
+
+Full syntax: <https://github.com/eza-community/eza/blob/main/man/eza_colors.5.md>.
+
+# Verification
+
+After running the installer and `exec zsh`, confirm everything is wired up:
+
+```bash
+# Prompt — Starship should be active
+echo $STARSHIP_SHELL          # "zsh"
+
+# eza — should print a version
+eza --version | head -1
+
+# Plugins — these arrays are populated when the plugins are loaded
+typeset -p _ZSH_AUTOSUGGEST_OPTIONS 2>&1 | head -1
+typeset -p ZSH_HIGHLIGHT_VERSION
+
+# Font — Ghostty needs Nerd Font for icons to render
+fc-list 2>/dev/null | grep -i "JetBrainsMono Nerd" | head -1
+```
+
+::: {#fig-verify}
+![Output of the verification commands](images/09-verify.png){width=90% fig-alt="Terminal showing the verification commands all returning expected values"}
+:::
+
+# Troubleshooting
+
+::: {.callout-warning}
+## Icons render as squares or "?"
+
+The terminal is not using a Nerd Font. Fix:
+
+1. Confirm the font is installed: `fc-list | grep -i nerd` (Linux) or
+   `ls ~/Library/Fonts | grep -i nerd` (macOS).
+2. Edit `~/.config/ghostty/config` and set
+   `font-family = "JetBrainsMono Nerd Font"`.
+3. Restart Ghostty (the config does not hot-reload font changes
+   reliably).
+:::
+
+::: {.callout-warning}
+## `command not found: starship`
+
+Either Starship didn't install, or your `PATH` doesn't include its
+install location. Check:
+
+```bash
+# macOS / Linuxbrew
+ls $(brew --prefix)/bin/starship
+
+# Linux native install (from starship.rs installer)
+ls ~/.local/bin/starship /usr/local/bin/starship
+```
+
+Re-run the installer; it is idempotent.
+:::
+
+::: {.callout-warning}
+## Plugins not loading
+
+Run `zsh -xv 2>&1 | grep -i 'no such file' | head` to see which path
+the `source` call tried. Then check the appropriate location for your
+package manager (see the comments in `zshrc`).
+:::
+
+# Rendering this document
+
+Install Quarto:
+
+```bash
+# macOS
+brew install --cask quarto
+
+# Linux
+# Download .deb / .rpm from https://quarto.org/docs/get-started/
+```
+
+Render:
+
+```bash
+cd docs/
+quarto render setup.qmd            # HTML output → setup.html
+quarto render setup.qmd --to pdf   # PDF output  → setup.pdf
+```
+
+# Appendix: file layout
+
+```
+yuzhou-mac-theme/
+├── README.md
+├── install.sh          # macOS + Linux installer
+├── zshrc               # symlinked to ~/.zshrc
+├── ghostty/
+│   └── config          # symlinked to ~/.config/ghostty/config
+└── docs/
+    ├── setup.qmd       # this document
+    └── images/         # screenshots referenced above
+```
