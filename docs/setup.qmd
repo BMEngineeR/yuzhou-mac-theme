@@ -35,16 +35,6 @@ All code, configs, and the one-shot installer live at
 [github.com/BMEngineeR/yuzhou-mac-theme](https://github.com/BMEngineeR/yuzhou-mac-theme).
 :::
 
-# Before & After
-
-::: {#fig-before-after layout-ncol=2}
-![Before — plain bash/zsh, no icons, no colors](images/01-before.png){#fig-before width=100% fig-alt="Plain terminal with default prompt and uncolored ls output"}
-
-![After — Starship prompt, colored `eza` listing, icons](images/02-after.png){#fig-after width=100% fig-alt="Themed terminal with Starship prompt, colored file listing with icons"}
-
-The same shell, before and after this setup.
-:::
-
 # Prerequisites
 
 | Component | macOS                                | Linux                              |
@@ -86,12 +76,6 @@ flowchart TD
     K --> L[Done — exec zsh]
 ```
 
-::: {#fig-installer-output}
-![Installer run on a clean Mac](images/03-installer-run.png){width=100% fig-alt="Terminal output showing install.sh progress with brew installs and link confirmations"}
-
-Sample output from running `bash install.sh` on a fresh Mac.
-:::
-
 # What you get
 
 ## Starship prompt
@@ -104,13 +88,9 @@ The Starship prompt automatically shows:
 - Command execution time when commands take longer than a threshold
 - Non-zero exit status from the previous command
 
-::: {#fig-starship}
-![Starship prompt inside a git repo](images/04-starship-git.png){width=80% fig-alt="Prompt showing folder name and git branch with modified file indicator"}
-:::
+Example interactive session:
 
-Example interactive session (simulated output):
-
-```bash
+```text
 ~ on  main
 ❯ cd Documents/GitHub/yuzhou-mac-theme
 
@@ -122,6 +102,9 @@ yuzhou-mac-theme on  main [!?]
 yuzhou-mac-theme on  main [!?] took 3ms
 ❯
 ```
+
+The leading icons (` `, ``) render as proper glyphs in any
+Nerd-Font-enabled terminal.
 
 ## Colored `ls` with `eza`
 
@@ -145,22 +128,14 @@ Color coding by file type:
 | Image             | Magenta | `*.png`, `*.jpg`                  |
 | Plain file        | White   | `README.md`, `*.txt`              |
 
-::: {#fig-eza}
-![`ll` output inside the repo](images/05-eza-ll.png){width=90% fig-alt="Long-format directory listing with icons, colored file types, and git status column"}
-
-`ll` inside the `yuzhou-mac-theme` repo, showing icons, colored types,
-and the `--git` status column.
-:::
-
 ## Syntax highlighting & autosuggestions
 
 As you type, `zsh-syntax-highlighting` colors valid commands green and
 invalid ones red, while `zsh-autosuggestions` shows a grayed-out
 suggestion from your history that you accept by pressing **→**.
 
-::: {#fig-zsh-plugins}
-![Live highlighting and suggestions while typing](images/06-zsh-plugins.png){width=90% fig-alt="Terminal showing a green-highlighted valid command and a gray autosuggestion to the right"}
-:::
+Example: after running `git status --short` once, typing `git st` shows
+the rest of the previous command in dim gray, ready to accept.
 
 # Customization
 
@@ -187,14 +162,6 @@ Popular options:
 - `Nord`
 - `Solarized Dark`
 - `GruvboxDark` (default)
-:::
-
-::: {#fig-themes layout-ncol=2}
-![Catppuccin Mocha](images/07-theme-catppuccin.png){#fig-cat width=100%}
-
-![Tokyo Night](images/08-theme-tokyo.png){#fig-tokyo width=100%}
-
-Two popular alternative themes.
 :::
 
 ## Customizing Starship
@@ -231,17 +198,13 @@ echo $STARSHIP_SHELL          # "zsh"
 # eza — should print a version
 eza --version | head -1
 
-# Plugins — these arrays are populated when the plugins are loaded
-typeset -p _ZSH_AUTOSUGGEST_OPTIONS 2>&1 | head -1
-typeset -p ZSH_HIGHLIGHT_VERSION
+# Plugins — these are populated when the plugins are loaded
+typeset -p ZSH_HIGHLIGHT_VERSION 2>&1 | head -1
+typeset -p ZSH_AUTOSUGGEST_STRATEGY 2>&1 | head -1
 
 # Font — Ghostty needs Nerd Font for icons to render
 fc-list 2>/dev/null | grep -i "JetBrainsMono Nerd" | head -1
 ```
-
-::: {#fig-verify}
-![Output of the verification commands](images/09-verify.png){width=90% fig-alt="Terminal showing the verification commands all returning expected values"}
-:::
 
 # Troubleshooting
 
@@ -254,8 +217,7 @@ The terminal is not using a Nerd Font. Fix:
    `ls ~/Library/Fonts | grep -i nerd` (macOS).
 2. Edit `~/.config/ghostty/config` and set
    `font-family = "JetBrainsMono Nerd Font"`.
-3. Restart Ghostty (the config does not hot-reload font changes
-   reliably).
+3. Restart Ghostty (font changes do not hot-reload reliably).
 :::
 
 ::: {.callout-warning}
@@ -313,6 +275,5 @@ yuzhou-mac-theme/
 ├── ghostty/
 │   └── config          # symlinked to ~/.config/ghostty/config
 └── docs/
-    ├── setup.qmd       # this document
-    └── images/         # screenshots referenced above
+    └── setup.qmd       # this document
 ```
