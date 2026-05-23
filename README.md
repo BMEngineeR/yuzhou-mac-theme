@@ -16,7 +16,7 @@ My terminal setup — **Ghostty + zsh + Starship + eza**. Works on macOS and Lin
 ## Install
 
 ```bash
-git clone https://github.com/YuzhouChang/yuzhou-mac-theme.git ~/yuzhou-mac-theme
+git clone https://github.com/BMEngineeR/yuzhou-mac-theme.git ~/yuzhou-mac-theme
 cd ~/yuzhou-mac-theme
 bash install.sh
 ```
