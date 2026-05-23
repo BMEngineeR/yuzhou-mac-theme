@@ -11,6 +11,8 @@ window-padding-y = 10
 background-opacity = 0.96
 window-decoration = true
 window-save-state = always
+
+# macOS-only (silently ignored on Linux)
 macos-titlebar-style = transparent
 
 # Cursor
