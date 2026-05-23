@@ -1,0 +1,23 @@
+# Font
+font-family = "JetBrainsMono Nerd Font"
+font-size = 14
+
+# Theme — built-in dark theme; run `ghostty +list-themes` to see all options
+theme = "GruvboxDark"
+
+# Window
+window-padding-x = 12
+window-padding-y = 10
+background-opacity = 0.96
+window-decoration = true
+window-save-state = always
+macos-titlebar-style = transparent
+
+# Cursor
+cursor-style = bar
+cursor-style-blink = true
+
+# Misc
+copy-on-select = true
+scrollback-limit = 100000
+mouse-hide-while-typing = true
